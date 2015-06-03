@@ -2,7 +2,7 @@
 exports.production = {
 	"state":"production",
 	"port":18080,
-	"sql_url":"mongodb://123.57.74.156:27017/chongyou"
+	"sql_url":"mongodb://127.0.0.1:27017/chongyou"
 };
 exports.development = {
 	"state":"development",
@@ -75,7 +75,7 @@ exports.email = {
 	    port: 25, // port
 	    auth: {
 	        user: 'cqupt_contacts@163.com',
-	        pass: 'sdatpxolpgecohrn'
+	        pass: 'sdatpxolpgecohr'
 	    }
 	},
 	email_from: "cqupt_contacts@163.com",
