@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include import %>
+    <style type="text/css">
+    .newActivity{
+      position: fixed;
+      top: 100px;
+      right: 0;
+      padding: 0;
+    }
+    .newActivity ul{
+      margin: 0;
+      padding: 0;
+    }
+    .newActivity ul li{
+      list-style: none;
+      margin: 10px 0;
+    }
+    .newActivity td{
+      padding-bottom: 5px;
+      vertical-align: top;
+    }
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+  	<p style="font-size:72px;text-align:center;">广告位招租</p>
+    <p style="font-size:24px;">本项目服务对象：所有重邮学子（暂不对大一、大二开放）</p>
+    <ul style="font-size:24px;line-height:1.5em;">
+      <li>
+        电脑端：[注册→审核通过→]登录→查看通讯录、修改个人信息、报名参加活动、其他高级功能。
+      </li>
+      <li>
+        手机端：极度优化页面大小，只需4Kb就可以登录→查看通讯录。麻麻再也不用担心我的流量啦！
+      </li>
+      <li>
+        微信端：（公众号：contacts
+        <button type="button" class="btn btn-primary btn-link" title="扫一扫下，即可关注重邮通讯录公众号"  data-container="body" data-toggle="popover" data-html="true" data-placement="right" data-content="<img src='images/wechat.jpg' width='258' height='258'>">点击查看二维码</button>
+        ），发送对应指令（即可获取所有活动信息、活动详情、报名活动、查看单人通讯录信息）
+      </li>
+      <li>
+        新版本又更新了很多内容哦，请到“<a href="/help">help</a>”中查看！
+      </li>
+    </ul>
+    <%if(newActivity.length > 0){%>
+    <div class="alert alert-info newActivity" style="line-height:1.5em;width:300px;">
+       <a href="#" class="close" data-dismiss="alert" style="position: absolute;top:1px;right:5px;z-index:3;font-size:40px;">&times;</a>
+       <div class="panel-group" id="accordion" style="margin-bottom:0;">
+        <p class="list-group-item active">
+           【活动信息简介】
+        </p>
+        <%for(var i in newActivity){%>
+        <div class="list-group-item">
+          <a data-toggle="collapse" data-parent="#accordion" href="#collapse<%=newActivity[i]["number"]%>">
+            【活动<%=newActivity[i]["number"]%>】<%=newActivity[i]["title"]%>
+          </a>
+          <div id="collapse<%=newActivity[i]["number"]%>" class="panel-collapse collapse">
+            <div class="panel-body">
+              【时间】<%=newActivity[i]["time"]%><br/>
+              【地点】<%=newActivity[i]["address"]%><br/>
+              【详情】见用户中心（<a href="/user?active=activity">点我直达</a>）
+            </div>
+          </div>
+        </div>
+        <%}%>
+
+       
+      </div>
+     <!--  <table>
+        <%for(var i in newActivity){%>
+        <tr>
+          <td style="width:80px;">【活动<%=newActivity[i]["number"]%>】</td>
+          <td><a href="/user?active=activity" title="时间：<%=newActivity[i]["time"]%>  地点：<%=newActivity[i]["address"]%>" style="color:#31708F;"><%=newActivity[i]["title"]%></a>&emsp;
+          </td>
+        </tr>
+        <%}%>
+      </table> -->
+    </div>
+    <%}%>
+<script type="text/javascript">
+	$(function () {
+    $(function () { $("[data-toggle='popover']").popover(); });
+		$(".activity_apply_btn").click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/activity_apply",
+            data: {"number":$(this).attr("data-number")},
+            success: function(msg){
+               dialog({
+                  title: "活动报名操作",
+                  content: msg.status,
+                  cancel: false,
+                  button: [{
+                    value: '确定',
+                      callback: function () {
+                        location.reload();
+                      },
+                    autofocus: true
+                  }]
+              }).showModal();
+            }
+         });
+      });
+	})
+</script>
+  </body>
+</html>

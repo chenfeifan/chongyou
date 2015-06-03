@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include import %>
+    <style type="text/css">
+    tbody{
+      border-left: 2px solid #ddd;
+      border-right: 2px solid #ddd;
+      border-bottom: 2px solid #ddd;
+    }
+    .table>tbody>tr>td{
+      text-align: center;
+    }
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+    <%if(user){%>
+  	<table class="table table-striped">
+       <caption>All message :</caption>
+       <thead>
+          <tr>
+             <th width="80">姓名</th>
+             <th width="46">性别</th>
+             <th style="min-width:80px;">母校信息</th>
+             <th width="120">籍贯</th>
+             <th width="105">常用号码</th>
+             <th style="min-width:45px;">公司</th>
+             <th style="min-width:80px;">工作城市</th>
+             <th style="min-width:80px;">工作岗位</th>
+             <th style="min-width:45px;">邮箱</th>
+             <th style="min-width:100px;">个人广告位</th>
+          </tr>
+       </thead>
+       <tbody>
+        <%
+          for(var i in list){
+            if(list[i].permission != "ing" && list[i].permission != "fail"){
+        %>
+          <tr>
+             <td>
+              <%=list[i].name%>
+              <%if(parseInt(list[i].name_number) != 1){%>
+                <%=list[i].name_number%>
+              <%}%>
+             </td>
+             <td>
+               <%if(list[i].is_sex == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].sex%>
+               <%}%>
+             </td>
+             <td>
+              <%if(list[i].is_mater == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].mater.th%>级<br>
+                <%=list[i].mater.academy%>
+               <%}%>
+             </td>
+             <td>
+               <%if(list[i].is_from == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].from%>
+               <%}%>
+             </td>
+             <td>
+               <%if(list[i].is_phone == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].phone%>
+               <%}%>
+             </td>
+             <td>
+               <%if(list[i].is_company == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].company%>
+               <%}%>
+             </td>
+             <td>
+               <%=list[i].work_city%>
+             </td>
+             <td>
+               <%if(list[i].is_work_job == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].work_job%>
+               <%}%>
+             </td>
+             <td>
+               <%if(list[i].is_email == "off"){%>
+                保密
+               <%}else{%>
+                <%=list[i].email%>
+               <%}%>
+             </td>
+             <td>
+              <%if(list[i].is_others == "off"){%>
+                保密
+               <%
+                }else{
+                  if(list[i].others.length > 50){
+                    var t1 = list[i].others.substr(0,50);
+                    var t2 = list[i].others.substr(49);
+               %>
+                <%=t1%><a href="#" title="显示全部" class="show_all" style="font-size:12px;font-weight:600;">······</a><span style="display:none;"><%=t2%></span>  
+               <%
+               }else{
+               %>
+                <%=list[i].others%>
+               <%
+                }
+              }
+               %>
+             </td>
+          </tr>
+        <%}}%>
+       </tbody>
+    </table>
+    <%}else{%>
+    <p>请先<a href="/user">登录</a>哦~</p>
+    <%}%>
+<script type="text/javascript">
+	$(function () {
+		$(".show_all").click(function(){
+      $(this).css({"display":"none"});
+      $(this).siblings("span").css({"display":"inline"});
+      return false;
+    });
+	})
+</script>
+  </body>
+</html>

@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include import %>
+    <link rel="stylesheet" type="text/css" href="stylesheets/bootstrap-switch.min.css">
+    <script type="text/javascript" src="javascripts/bootstrap-switch.min.js"></script>
+    <style type="text/css">
+    #main{
+      width: 100%;
+      min-height: 450px;
+      padding-bottom: 100px;
+    }
+    #login{
+      width: 400px;
+      margin: 100px auto 20px;
+    }
+    #login a,#register a,#forget a{
+      margin-left: 10px;
+      font-size: 16px;
+      vertical-align: bottom;
+      text-decoration: underline;
+    }
+    #login .form-group{
+      line-height: 2em;
+    }
+    #register{
+      display: none;
+    }
+    #register table{
+      margin: 0 auto;
+    }
+    #register table tr td{
+      padding: 10px;
+    }
+    #register table tr th{
+      padding: 10px;
+      text-align: right;
+    }
+    #forget{
+      display: none;
+      width: 400px;
+      margin: 100px auto 20px;
+    }
+    .super_table tbody tr td{
+      text-align: center;
+    }
+    #admin_personal li{
+      list-style: none;
+      vertical-align: middle;
+      line-height: 1.5em;
+      margin: 5px 0;
+    }
+    #admin_personal li input,#admin_personal li textarea{
+      width: 300px;
+    }
+
+    /*表单错误信息样式*/
+    form p.error{
+        color: #F00;
+        padding-top: 10px;
+    }
+    form span.error{
+      color: #F00;
+      padding: 0 5px;
+    }
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+    <div id="main">
+      <%
+        if(user){
+      %>
+          <ul id="myTab" class="nav nav-tabs">
+             <%if(user.permission == "admin"){%>
+               <li <%if(active == "default"){%>class="active"<%}%>><a href="#admin_manage" data-toggle="tab">成员管理</a></li>
+             <%}%>
+             <%if(user.permission == "super"){%>
+               <li <%if(active == "default"){%>class="active"<%}%>><a href="#super_manage" data-toggle="tab">成员管理</a></li>
+             <%}%>
+             <li <%if(user.permission == "user" && active == "default"){%>class="active"<%}%>>
+                <a href="#myselft" data-toggle="tab">个人信息</a>
+             </li>
+             <li>
+                <a href="#editPsw" data-toggle="tab">修改密码</a>
+             </li>
+             <%if(user.permission == "admin" || user.permission == "super"){%>
+             <li>
+                <a href="#advan" data-toggle="tab">高级功能</a>
+             </li>
+             <%}%>
+             <li <%if(active == "activity"){%>class="active"<%}%>>
+                <a href="#activity" data-toggle="tab">活动信息</a>
+             </li>
+             <li><a href="/logout">注销</a></li>
+          </ul>
+          <div id="myTabContent" class="tab-content">
+
+
+             <%if(user.permission == "admin"){%>
+             <div class="tab-pane fade <%if(active == "default"){%>in active<%}%>" id="admin_manage">
+                <table class="table table-hover super_table" style="margin-top:20px;">
+                   <thead>
+                      <tr>
+                         <th style="min-width:60px;">姓名</th>
+                         <th style="min-width:80px;">常用手机</th>
+                         <th style="min-width:80px;">母校信息</th>
+                         <th style="min-width:60px;">状态</th>
+                         <th style="min-width:80px;">提交时间</th>
+                         <th>操作</th>
+                      </tr>
+                   </thead>
+                   <tbody>
+                    <%
+                      for(var i in all){
+                        if(all[i].permission == "ing" || all[i].permission == "user"){
+                    %>
+                          <tr>
+                             <td>
+                              <%=all[i].name%>
+                              <%if(parseInt(all[i].name_number) != 1){%>
+                                <%=all[i].name_number%>
+                              <%}%>
+                            </td>
+                             <td><%=all[i].phone%></td>
+                             <td>
+                               <%=all[i].mater.th%>届<br>
+                               <%=all[i].mater.academy%>
+                             </td>
+                             <td><%=locals.pemissions[all[i].permission]%></td>
+                             <td data-time="<%=all[i].time%>"><%=all[i].time.substr(0,4)+"-"+all[i].time.substr(4,2)+"-"+all[i].time.substr(6,2)+" "+all[i].time.substr(8,2)+":"+all[i].time.substr(10,2)%></td>
+                             <td>
+                               <%if(all[i].permission == "ing"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="user">通过</button>
+                               <%}%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="del">删除</button>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="fail">拉黑</button>
+                             </td>
+                          </tr>
+                    <%}}%>
+                   </tbody>
+                </table>
+             </div>
+             <%}%>
+              
+              
+             <%if(user.permission == "super"){%>
+             <div class="tab-pane fade <%if(active == "default"){%>in active<%}%>" id="super_manage">
+                <table class="table table-hover super_table" style="margin-top:20px;">
+                   <thead>
+                      <tr>
+                         <th style="min-width:80px;">注册时间</th>
+                         <th style="min-width:60px;">姓名</th>
+                         <th style="min-width:45px;">性别</th>
+                         <th style="min-width:45px;">籍贯</th>
+                         <th style="min-width:45px;">手机</th>
+                         <th style="min-width:45px;display:none;">备用</th>
+                         <th style="min-width:45px;">微信</th>
+                         <th style="min-width:45px;">邮箱</th>
+                         <th style="min-width:80px;">其他信息</th>
+                         <th style="min-width:80px;">就业公司</th>
+                         <th style="min-width:80px;">工作城市</th>
+                         <th style="min-width:80px;">工作岗位</th>
+                         <th style="min-width:80px;">母校信息</th>
+                         <th style="min-width:60px;">权限</th>
+                         <th style="width:50px;">操作</th>
+                      </tr>
+                   </thead>
+                   <tbody>
+                    <%
+                      for(var i in all){
+                    %>
+                          <tr>
+                             <td data-time="<%=all[i].time%>"><%=all[i].time.substr(0,4)+"-"+all[i].time.substr(4,2)+"-"+all[i].time.substr(6,2)+" "+all[i].time.substr(8,2)+":"+all[i].time.substr(10,2)%></td>
+                             <td>
+                              <%=all[i].name%>
+                              <%if(parseInt(all[i].name_number) != 1){%>
+                                <%=all[i].name_number%>
+                              <%}%>
+                            </td>
+                             <td><%=all[i].sex%></td>
+                             <td><%=all[i].from%></td>
+                             <td><%=all[i].phone%></td>
+                             <td style="display:none;"><%=all[i].other_phone%></td>
+                             <td><%=all[i].wechat%></td>
+                             <td><%=all[i].email%></td>
+                             <td><%=all[i].others%></td>
+                             <td><%=all[i].company%></td>
+                             <td><%=all[i].work_city%></td>
+                             <td><%=all[i].work_job%></td>
+                             <td>
+                               <%=all[i].mater.th%>届<br>
+                               <%=all[i].mater.academy%>
+                             </td>
+                             <td><%=locals.pemissions[all[i].permission]%></td>
+                             <td style="line-height:32px;">
+                               <%if(all[i].permission == "ing"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="user">通过</button>
+                               <%}%>
+                               <%if(all[i].permission != "super"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="del">删除</button>
+                               <%}%>
+                               <%if(all[i].permission == "user" || all[i].permission == "ing"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="fail">拉黑</button>
+                               <%}%>
+
+                               <%if(all[i].permission == "fail"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="user">移黑</button>
+                               <%}%>
+                               <%if(all[i].permission == "user"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="admin">升管</button>
+                               <%}%>
+                               <%if(all[i].permission == "admin"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="user">移管</button>
+                               <%}%>
+                               <%if(all[i].permission == "admin"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="super">升超</button>
+                               <%}%>
+                               <%if(all[i].permission == "super"){%>
+                                 <button type="button" class="btn btn-primary btn-sm operate" data-time="<%=all[i].time%>" data-permission="admin">降超</button>
+                               <%}%>
+                             </td>
+                          </tr>
+                        <%}%>
+                       </tbody>
+                    </table>
+                 </div>
+              <%}%>
+            <!-- 高级功能 -->
+            <%if(user.permission == "super" || user.permission == "admin"){%>
+              <div class="tab-pane fade" id="advan" style="margin-top:20px;">
+                <div class="panel-group" id="accordion">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" 
+                          href="#collapseMater">
+                          <span class="glyphicon glyphicon-edit" style="margin-right:10px;"></span>修改母校信息
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseMater" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <form class="form-horizontal edite_mater" role="form">
+                           <div class="form-group">
+                              <label for="time" class="col-sm-2 control-label">姓名</label>
+                              <div class="col-sm-10">
+                                 <select class="form-control time" style="width:200px;">
+                                  <%
+                                    for(var j in all){
+                                      if(user.permission == "super" || (user.permission == "admin" && all[j].permission != "super")){
+                                  %>
+                                   <option value="<%=all[j].time%>">
+                                    <%=all[j].name%>
+                                    <%if(parseInt(all[j].name_number) != 1){%>
+                                      <%=all[j].name_number%>
+                                    <%}%>
+                                   </option>
+                                   <%}}%>
+                                </select>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <label for="lastname" class="col-sm-2 control-label">改为</label>
+                              <div class="col-sm-10">
+                                 <select class="form-control year" name="mater_year" style="display:inline-block;width:100px;margin-right:10px;">
+                                     <%for(var i in locals.years){%>
+                                       <option><%= locals.years[i]%></option>
+                                     <%}%>
+                                  </select>级
+                                  <a href="#" data-toggle="tooltip" data-placement="top" title="入学年份，可以参考学号前四位" style="text-decoration:none;margin-left:0;">
+                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                  </a>
+                                  <select class="form-control academy" name="mater_academy" style="display:inline-block;width:120px;margin:0 10px 0 20px;">
+                                      <%for(var i in locals.academys){%>
+                                         <option><%= i%></option>
+                                      <%}%>
+                                  </select>学院
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-sm-offset-2 col-sm-10">
+                                 <button type="button" class="btn btn-default sub">提交</button>
+                              </div>
+                           </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 发起活动 -->
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" 
+                          href="#collapseAddActivity">
+                          <span class="glyphicon glyphicon-edit" style="margin-right:10px;"></span>发起活动
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseAddActivity" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <form class="form-horizontal addActivity" role="form">
+                           <div class="form-group">
+                              <label for="title" class="col-sm-2 control-label">活动标题</label>
+                              <div class="col-sm-10">
+                                 <input type="text" class="form-control title" name="activity_title" maxlength="20" placeholder="20字以内">
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <label for="content" class="col-sm-2 control-label" >活动内容</label>
+                              <div class="col-sm-10">
+                                <textarea class="form-control content" rows="3" name="activity_content" maxlength="300" placeholder="电脑、手机、微信三端互通，请尽量简洁填写，300字以内。"></textarea>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <label for="time" class="col-sm-2 control-label" >活动时间</label>
+                              <div class="col-sm-10">
+                                <input type="text" class="Wdate form-control time" id="time_activity" name="activity_time" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm'})" style="width:200px"/>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <label for="address" class="col-sm-2 control-label">活动地点</label>
+                              <div class="col-sm-10">
+                                 <input type="text" class="form-control address" name="activity_address" maxlength="30" placeholder="选填项，没有地点可以不填">
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-sm-offset-2 col-sm-10">
+                                 <button type="submit" class="btn btn-default">提交</button>
+                              </div>
+                           </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 重置密码 -->
+                  <%if(user.permission == "super"){%>
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" 
+                          href="#collapseReset">
+                          <span class="glyphicon glyphicon-repeat" style="margin-right:10px;"></span>重置密码
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseReset" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <form class="form-horizontal resetPsw" role="form">
+                           <div class="form-group">
+                              <label for="time" class="col-sm-2 control-label">姓名</label>
+                              <div class="col-sm-10">
+                                 <select class="form-control time" style="width:200px;">
+                                  <%
+                                    for(var j in all){
+                                  %>
+                                   <option value="<%=all[j].time%>">
+                                    <%=all[j].name%>
+                                    <%if(parseInt(all[j].name_number) != 1){%>
+                                      <%=all[j].name_number%>
+                                    <%}%>
+                                   </option>
+                                   <%}%>
+                                </select>
+                                <span class="help-block">重置后的密码为：chongyou，请重置后后及时修改！</span>
+                              </div>
+                           </div>
+                           <div class="form-group">
+                              <div class="col-sm-offset-2 col-sm-10">
+                                 <button type="button" class="btn btn-default re">重置密码</button>
+                              </div>
+                           </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 查看日志 -->
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" 
+                          href="#collapseLog">
+                          <span class="glyphicon glyphicon-file" style="margin-right:10px;"></span>操作日志
+                        </a>
+                      </h4>
+                    </div>
+                    <div id="collapseLog" class="panel-collapse collapse">
+                      <div class="panel-body">
+                        <form class="form-horizontal log" role="form">
+                           <div class="form-group">
+                              <label class="control-label" style="margin-left:40px;">查询条数：</label>
+                                <input type="text" class="form-control" name="number" placeholder="请输入正整数" style="display:inline;width:120px;">
+                                <button type="submit" class="btn btn-default">查询</button>
+                           </div>
+                        </form>
+                        <table class="table table-bordered table-hover">
+                           <caption>查询结果：</caption>
+                           <thead>
+                              <tr>
+                                 <th style="width:160px;">时间</th>
+                                 <th style="width:80px;">操作人</th>
+                                 <th style="width:50px;">状态</th>
+                                 <th>操作内容</th>
+                              </tr>
+                           </thead>
+                           <tbody></tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                  <%}%>
+                </div>
+              </div>
+            <%}%>
+            <!-- 个人信息 -->
+             <div class="tab-pane fade <%if(user.permission == "user" && active == "default"){%>in active<%}%>" id="myselft">
+                <form class="form-horizontal edit" role="form" style="margin-top:20px;" method="post" action="/edit_personal">
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">我的姓名</label>
+                      <div class="col-sm-6">
+                         <p style="line-height:2em;"><%=user.name%></p>
+                      </div>
+                   </div>
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">母校信息</label>
+                      <div class="col-sm-6">
+                         <p style="line-height:2em;"><%=user.mater.th%>级，<%=user.mater.academy%>学院（如需修改，请联系管理员）</p>
+                      </div>
+                   </div>
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">常用号码</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="phone" value="<%=user.phone%>" disabled>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_phone" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_phone" <%if(user.is_phone == "on"){%>checked<%}%>>
+                      </div>
+                   </div>
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">备用号码</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="other_phone" value="<%=user.other_phone%>" disabled>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_other_phone" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_other_phone" <%if(user.is_other_phone == "on"){%>checked<%}%>>
+                      </div>
+                   </div>  
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">邮箱</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="email" value="<%=user.email%>" disabled>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_email" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_email" <%if(user.is_email == "on"){%>checked<%}%>>
+                      </div>
+                   </div>  
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">微信号</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="wechat" value="<%=user.wechat%>" disabled>
+                      </div>
+                      <div style="line-height:32px;">强制不公开，暂只用于登录</div>
+                   </div>   
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">其他信息</label>
+                      <div class="col-sm-6">
+                         <textarea class="form-control" row="3" name="others" disabled><%=user.others%></textarea>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_others" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_others" <%if(user.is_others == "on"){%>checked<%}%>>
+                      </div>
+                   </div>    
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">就业公司</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="company" value="<%=user.company%>" disabled>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_company" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_company" <%if(user.is_company == "on"){%>checked<%}%>>
+                      </div>
+                   </div>     
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">工作城市</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="work_city" value="<%=user.work_city%>" disabled>
+                      </div>
+                      <div style="line-height:32px;">强制公开</div>
+                   </div>
+                   <div class="form-group">
+                      <label class="control-label col-sm-2">工作岗位</label>
+                      <div class="col-sm-6">
+                         <input type="text" class="form-control" name="work_job" value="<%=user.work_job%>" disabled>
+                      </div>
+                      <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-small bootstrap-switch-animate bootstrap-switch-off">
+                         <input type="checkbox" name="user_work_job" class="checkbox-style col-sm-2" data-on-color="success" data-off-color="danger" data-time="<%=user.time%>" data-type="is_work_job" <%if(user.is_work_job == "on"){%>checked<%}%>>
+                      </div>
+                   </div> 
+                  <div class="form-group">
+                    <div class="col-sm-12" style="text-align:center;">
+                       <input type="hidden" name="time" value="<%=user.time%>">           
+                       <button type="botton" class="btn btn-default edit_btn" style="width:100px;margin-right:100px;">启用编辑</button>
+                       <button type="submit" class="btn btn-default" style="width:100px;display:none;">提交</button>
+                    </div>
+                  </div>
+                </form>
+             </div>
+             <!-- 修改密码 -->
+             <div class="tab-pane fade" id="editPsw" style="width:500px;margin:100px auto 0">
+               <form class="form-horizontal" role="form">
+                 <div class="form-group">
+                    <label for="password1" class="col-sm-3 control-label">原密码</label>
+                    <div class="col-sm-9">
+                       <input type="password" class="form-control password1" placeholder="请输入原密码">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <label for="password" class="col-sm-3 control-label">新密码</label>
+                    <div class="col-sm-9">
+                       <input type="password" class="form-control password2" placeholder="请输入新密码">
+                    </div>
+                 </div>
+                <div class="form-group">
+                    <label for="password3" class="col-sm-3 control-label">重复新密码</label>
+                    <div class="col-sm-9">
+                       <input type="password" class="form-control password3" placeholder="请再次输入新密码">
+                    </div>
+                 </div>
+                 <div class="form-group">
+                    <div class="col-sm-offset-3 col-sm-9">
+                       <button type="button" class="btn btn-default edite_psw">提交</button>
+                    </div>
+                 </div>
+              </form>
+              <div class="alert" style="display:none;">提示信息~</div>
+             </div>
+             <!-- 活动信息 -->
+             <div class="tab-pane fade <%if(active == "activity"){%>in active<%}%>" id="activity">
+                <table class="table table-hover super_table" style="margin-top:20px;">
+                   <thead>
+                      <tr>
+                         <th style="min-width:80px;">活动编号</th>
+                         <th style="min-width:80px;">发起时间</th>
+                         <th style="min-width:60px;">发起人</th>
+                         <th style="min-width:45px;">状态</th>
+                         <th style="min-width:80px;">活动标题</th>
+                         <th style="min-width:80px;">活动内容</th>
+                         <th style="min-width:80px;">活动时间</th>
+                         <th style="min-width:80px;">活动地点</th>
+                         <th style="min-width:80px;">活动名单</th>
+                         <th style="width:50px;">操作</th>
+                      </tr>
+                   </thead>
+                   <tbody>
+                    <%for(var i in activity){%>
+                      <tr>
+                        <td>活动<%=activity[i]["number"]%></td>
+                        <td><%=activity[i]["fromTime"]%></td>
+                        <td><%=activity[i]["fromName"]%></td>
+                        <td><%=activity[i]["status"]%></td>
+                        <td><%=activity[i]["title"]%></td>
+                        <td><%=activity[i]["content"]%></td>
+                        <td><%=activity[i]["time"]%></td>
+                        <td><%=activity[i]["address"]%></td>
+                        <td><%=activity[i]["list"]%></td>
+                        <td style="line-height:32px;">
+                          <%
+                            if(activity[i]["status"] == "审核通过"){
+                              var mark = true;
+                              for(var j in activity[i]["list"]){
+                                var name = user.name_number == 1?user.name:user.name+user.name_number;
+                                if(activity[i]["list"][j] == name){
+                          %>
+                          已报名
+                          <%
+                                  mark = false;
+                                  break;
+                                }
+                              }
+                              if(mark){
+                          %>
+                            <button type="button" class="btn btn-primary btn-sm activity_apply_btn" data-number="<%=activity[i]["number"]%>">报名</button>
+                          <%
+                              }
+                            }
+                          %>
+                          <%if(user.permission == "super"){%>
+                            <%if(activity[i]["status"] == "未审核"){%>
+                              <button type="button" class="btn btn-primary btn-sm activity_btn" data-number="<%=activity[i]["number"]%>" data-status="审核通过">通过</button>
+                             <%}%>
+                             <button type="button" class="btn btn-primary btn-sm activity_btn" data-number="<%=activity[i]["number"]%>" data-status="删除">删除</button>
+                           <%}%>
+                        </td>
+                      </tr>
+                    <%}%>
+                   </tbody>
+                </table>
+             </div>
+
+          </div>
+
+      <%}else{%>
+    	<form role="form" id="login">
+         <div class="form-group">
+            <label for="name">用户名</label>
+            <input type="text" class="form-control" name="name" id="login_name" placeholder="请输入微信号/常用号码/真实姓名">
+         </div>
+         <div class="form-group">
+            <label for="inputPassword" class="control-label">密码</label>
+            <input type="password" class="form-control" name="password" id="login_password" placeholder="请输入密码">
+         </div>
+         <button type="submit" class="btn btn-default" id="login_btn">登录</button>
+         <a href="#" class="sw" data-link="#register">注册</a><a href="#" class="sw" data-link="#forget">忘记密码</a>
+         <div class="alert alert-danger alert-dismissable login_err" style="margin-top:20px;display:none;">
+             <button type="button" class="close" data-dismiss="alert" 
+                aria-hidden="true">
+                &times;
+             </button>
+             <span>这里是错误信息！</span>
+         </div>
+      </form>
+      <form role="form" id="forget">
+        <div class="panel panel-default">
+           <div class="panel-heading">
+              <h3 class="panel-title">
+                 找回密码操作
+              </h3>
+           </div>
+           <div class="panel-body">
+              <div class="form-group">
+                <div class="col-sm-12">
+                <label for="forget_email" >邮箱：</label>
+                   <input type="text" class="form-control" name="forget_email" id="forget_email" placeholder="请输入邮箱" style="display:inline-block;width:280px;">
+                    <span class="help-block">如之前没有填写邮箱或者忘记邮箱，请联系超级管理员重置密码！</span>
+                </div>
+                <button type="submit" class="btn btn-default">提交</button>
+                <a href="#" class="sw" data-link="#register">注册</a><a href="#" class="sw" data-link="#login">登录</a>
+             </div>
+           </div>
+        </div>
+      </form>
+      <form role="form" id="register">
+         <table>
+           <tr>
+             <th>姓名</th>
+             <td style="width:400px;"><input type="text" class="form-control" name="name" id="new_name" placeholder="必填，真实姓名，可用于登录"></td>
+             <td>强制公开</td>
+           </tr>
+           <tr>
+             <th>密码</th>
+             <td style="width:400px;"><input type="password" class="form-control" name="password1" id="new_password1" placeholder="必填，6~20位，字母/数字/下划线组成，字母/下划线开头"></td>
+             <td></td>
+           </tr>
+           <tr>
+             <th>确认密码</th>
+             <td style="width:400px;"><input type="password" class="form-control" name="password2" id="new_password2" placeholder="必填，与上方的密码一致"></td>
+             <td></td>
+           </tr>
+           <tr>
+             <th>性别</th>
+             <td>
+                <label class="checkbox-inline" style="font-size:18px;">
+                  <input type="radio" name="sex" value="boy" checked> boy
+               </label>
+               <label class="checkbox-inline" style="font-size:18px;">
+                  <input type="radio" name="sex" value="girl"> girl
+               </label>
+             </td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_sex" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>籍贯</th>
+             <td>
+               <select class="form-control city1" name="from1" style="display:inline-block;width:110px;margin-right:10px;">
+                   <%for(var i in locals.city){%>
+                     <option><%= i%></option>
+                   <%}%>
+                </select>
+                <select class="form-control city2" name="from2" style="display:inline-block;width:150px;">
+                    <%for(var i in locals.city["北京市"]){%>
+                     <option><%= locals.city["北京市"][i]%></option>
+                   <%}%>
+                </select>
+             </td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_from" class="checkbox-style" data-on-color="success" data-off-color="danger" checked>
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>常用号码</th>
+             <td><input type="text" class="form-control" name="phone" placeholder="选填，11位纯数字，可用于登录"></td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_phone" class="checkbox-style" data-on-color="success" data-off-color="danger" checked>
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>备用号码</th>
+             <td><input type="text" class="form-control" name="other_phone" placeholder="选填，座机或手机号，格式不限"></td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_other_phone" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>邮箱</th>
+             <td><input type="text" class="form-control" name="email" placeholder="选填，用于登录、找回密码、接收通知"></td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_email" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>微信</th>
+             <td><input type="text" class="form-control" name="wechat" placeholder="选填，微信号，可用于登录"></td>
+             <td>强制不公开</td>
+           </tr>
+           <tr>
+             <th>其他</th>
+             <td>
+              <div>
+                <textarea class="form-control" rows="3" name="others" placeholder="选填，100字以内，自己的广告位哈~"></textarea>
+              </div>
+            </td>
+             <td style="position:relative;">
+              <span style="position:absolute;bottom:12px;left:0;font-size:12px;color:#B6ADAD;">
+                  <span class="others_words">0</span>字
+              </span>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_others" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>就业公司</th>
+             <td><input type="text" class="form-control" name="company" placeholder="选填，简洁的公司名称"></td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_company" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>工作城市</th>
+             <td>
+               <select class="form-control city1" name="work_city1" style="display:inline-block;width:110px;margin-right:10px;">
+                  <option></option>
+                   <%for(var i in locals.city){%>
+                     <option><%= i%></option>
+                   <%}%>
+                </select>
+                <select class="form-control city2" name="work_city2" style="display:inline-block;width:150px;">
+                  <option></option>
+                </select>
+             </td>
+             <td>强制公开</td>
+           </tr>
+           <tr>
+             <th>工作岗位</th>
+             <td><input type="text" class="form-control" name="work_job" placeholder="选填，岗位名需非行内人看得懂哦~"></td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_work_job" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+           </tr>
+           <tr>
+             <th>母校信息</th>
+             <td>
+                <select class="form-control academy" name="mater_year" style="display:inline-block;width:100px;margin-right:10px;">
+                   <%for(var i in locals.years){%>
+                     <option><%= locals.years[i]%></option>
+                   <%}%>
+                </select>级
+                <a href="#" data-toggle="tooltip" data-placement="top" title="入学年份，可以参考学号前四位" style="text-decoration:none;margin-left:0;">
+                  <span class="glyphicon glyphicon-question-sign"></span>
+                </a>
+                <select class="form-control academy" name="mater_academy" style="display:inline-block;width:120px;margin:0 10px 0 20px;">
+                    <%for(var i in locals.academys){%>
+                       <option><%= i%></option>
+                    <%}%>
+                </select>学院
+              </td>
+             <td>
+              <div class="bootstrap-switch bootstrap-switch-wrapper bootstrap-switch-id-switch-size bootstrap-switch-mini bootstrap-switch-animate bootstrap-switch-off">
+                 <input type="checkbox" name="is_mater" class="checkbox-style" data-on-color="success" data-off-color="danger">
+              </div>
+             </td>
+             <tr>
+               <td colspan="3" align="center">
+                <br/>
+                 <button type="submit" class="btn btn-default">注册</button>
+                 <a href="#" class="sw" data-link="#login">登录</a>
+               </td>
+             </tr>
+           </tr>
+         </table>
+      </form>
+      <%}%>
+    </div>
+<script language="javascript" type="text/javascript" src="My97DatePicker/WdatePicker.js"></script>
+<script type="text/javascript">
+	$(function () {
+    //初始化城市列表
+    var cityold = {};
+    var city = {};
+    <%for(var i in city){%>
+      cityold["<%=i%>"] = "<%=city[i]%>";
+    <%}%>
+    for(var i in cityold){
+      city[i] = cityold[i].split(",");
+    }
+    //城市选择联动
+    $("select.city1").on("change", function(){
+      var that = $(this);
+      var city2List = "";
+      var city1 = that.val();
+      for(var i in city[city1]){
+        city2List = city2List + "<option>"+ city[city1][i] +"</option>"
+      }
+      that.siblings("select.city2").html(city2List);
+    });
+
+    //提示标签初始化
+    $("[data-toggle='tooltip']").tooltip();
+    //初始化on 、off开关
+		$(".checkbox-style").bootstrapSwitch();
+
+    //注册和登录切换
+    $("form a.sw").click(function(){
+      var that = $(this);
+      var id = that.attr("data-link");
+      that.parents("form").hide(500, function(){
+        $(id).show(500);
+      });
+      return false;
+    });
+
+    //登录
+    $("form#login").submit(ajaxLogin);
+    $("#login_btn").click(ajaxLogin);
+    function ajaxLogin(){
+      var login_err = $(".login_err");
+      var name = $.trim($("#login_name").val());
+      var password = $.trim($("#login_password").val());
+      if (name == "" || password == "") {
+        login_err.find("span").html("用户名或密码不能为空！");
+        login_err.css({"display":"block"});
+        return false;
+      }else{
+        $.ajax({
+          type: "POST",
+          url: "/login",
+          data: {"name":name,"password":password},
+          success: function(msg){
+            if (msg.state == "success") {
+              location.reload();
+            }else{
+              login_err.find("span").html(msg.err);
+              login_err.css({"display":"block"});
+            }
+          }
+       });
+        return false;
+      }
+    }
+
+    //注册
+    $("#register").validate({
+        focusInvalid: true,  //自动聚焦第一个错误输入
+        focusCleanup: true,  //清除错误信息
+        errorElement: "p",
+        rules: {
+           name: {
+            required: true,
+            mustChinses: true,
+            minlength: 2
+          },
+           password1: {
+            required: true,
+            rangelength: [6,20],
+            passwordTest: true
+           },
+           password2: {
+            required: true,
+            rangelength: [6,20],
+            equalTo: "#new_password1"
+           },
+           phone: {
+            digits: true,
+            minlength: 11,
+            maxlength: 11,
+            remote: "check_phone"
+           },
+           other_phone: {
+            rangelength: [7,20],
+           },
+           email: {
+            email: true,
+            remote: "check_email"
+           },
+           wechat: {
+            remote: "check_wechat"
+           },
+           others: {},
+           company: {
+            maxlength: 50
+           },
+           work_city1: {
+            required: true
+           },
+           work_job: {
+            maxlength: 50
+           }
+          },
+        messages: {
+           name: {
+             required: "必填，请输入中文姓名",
+            mustChinses: "必须是中文",
+            minlength: "名字太短了吧"
+           },
+           password1: {
+            required: "必填，请输入密码",
+            rangelength: "长度必须为 6 和 20 之间",
+            passwordTest: "由字母、数字和下划线组成，必须以字母或下划线开头"
+           },
+           phone: {
+            digits: "必须是数字",
+            remote: "号码已被注册",
+           },
+           other_phone: {
+            rangelength: "号码格式有误"
+           },
+           wechat: {
+            remote: "该微信号已被注册"
+           },
+           email: {
+            email: "邮箱格式有误",
+            remote: "该邮箱已被注册"
+           },
+           company: {
+            maxlength: "太长了，请填简洁点"
+           },
+           work_job: {
+            maxlength: "岗位名称有那么长吗？"
+           }
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "post",
+                url: "/register",
+                data: $("#register").serialize(),
+                success: function(msg){
+                dialog({
+                      title: msg.status,
+                      content: msg.msg,
+                      cancel: false,
+                      button: [{
+                        value: '确定',
+                        callback: function () {
+                            if (msg.status == "注册成功") {
+                              location.reload();
+                            }
+                        },
+                        autofocus: true
+                      }]
+                  }).showModal();
+                }
+            });    
+         },
+    });
+    $.validator.addMethod("mustChinses", function(value, element, params){
+      var mustChinses = /[^\u4e00-\u9fa5]/;
+      return this.optional(element) || !mustChinses.test(value);  //输入有值才校验
+    }, "必须是中文！");
+    $.validator.addMethod("passwordTest", function(value, element, params){
+      var passwordTest = /^[a-zA-Z_][a-zA-Z0-9_]{5,19}$/;
+      return this.optional(element) || passwordTest.test(value);  //输入有值才校验
+    }, "由字母、数字和下划线组成，必须以字母或下划线开头");
+
+     //找回密码
+     $("form#forget").validate({
+        errorElement: "p",
+        rules: {
+           forget_email: {
+            required: true,
+            email: true,
+           }
+          },
+        messages: {
+           forget_email: {
+            required: "错误：请填写邮箱",
+            email: "错误：请填写正确的邮箱地址"
+           }
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "get",
+                url: "/forget_email",
+                data: $("form#forget").serialize(),
+                success: function(msg){
+                  dialog({
+                      content: msg.err || "修改密码邮件已发送，请登录邮箱查看邮件，按提示完成密码修改！",
+                      cancel: false,
+                      button: [{
+                        value: '确定',
+                        autofocus: true
+                      }]
+                  }).showModal();
+                }
+            });    
+         },
+    });
+
+    //edit on/off
+    $('.checkbox-style').on('switchChange.bootstrapSwitch', function(event, state) {
+      var mark = "off";
+      if (state) {
+        mark = "on";
+      }
+      $.ajax({
+          type: "POST",
+          url: "/edit_state",
+          data: {"time":$(this).attr("data-time"),"type":$(this).attr("data-type"),"state":mark},
+          success: function(msg){}
+       });
+    });
+
+    //修改密码
+    $("#editPsw .edite_psw").click(function(){
+      var password1 = $.trim($("#editPsw .password1").val());
+      var password2 = $.trim($("#editPsw .password2").val());
+      var password3 = $.trim($("#editPsw .password3").val());
+      var msgDiv = $("#editPsw div.alert");
+      var err = "";
+      if (!password1 || !password2 || !password3) {
+        err = "密码不可以为空！";
+      }
+      if (password2 != password3) {
+        err = "新密码两次输入不一致！";
+      }
+      if (password1 == password2) {
+        err = "新密码不能与原密码一样！";
+      }
+      if (!/^[a-zA-Z_][a-zA-Z0-9_]{5,19}$/.test(password2)) {
+         err = "新密码必须是6~20位，由字母、数字和下划线组成，以字母或下划线开头";
+      }
+      if(err == ""){
+        $.ajax({
+            type: "POST",
+            url: "/edite_psw",
+            data: {"old_password":password1,"new_password":password3},
+            success: function(msg){
+              if(msg.state == "success"){
+                $("#editPsw form")[0].reset();
+                msgDiv.html("修改成功！");
+                msgDiv.removeClass("alert-danger").addClass("alert-success").show();
+              }
+              if (msg.state == "fail") {
+                msgDiv.html(msg.err);
+                msgDiv.removeClass("alert-success").addClass("alert-danger").show();
+              }
+            }
+         });
+      }else{
+        msgDiv.html(err);
+        msgDiv.removeClass("alert-success").addClass("alert-danger").show();
+        return false;
+      }
+    });
+    
+    //修改母校信息
+    $("form.edite_mater .sub").click(function(){
+      var time = $("form.edite_mater .time").val();
+      var year = $("form.edite_mater .year").val();
+      var academy = $("form.edite_mater .academy").val();
+      $.ajax({
+          type: "POST",
+          url: "/edite_mater",
+          data: {"time":time,"year":year,"academy":academy},
+          success: function(msg){
+            if(msg.state == "success"){
+              dialog({
+                  content: "母校信息修改成功",
+                  cancel: false,
+                  button: [{
+                    value: '确定',
+                      callback: function () {
+                        location.reload();
+                      },
+                    autofocus: true
+                  }]
+              }).showModal();
+            }
+            if (msg.state == "fail") {
+              console.log("修改母校信息失败！");
+            }
+          }
+       });
+    });
+
+    //重置密码
+    $("form.resetPsw .re").click(function(){
+      var time = $("form.resetPsw .time").val();
+      $.ajax({
+          type: "POST",
+          url: "/edite_resetPsw",
+          data: {"time":time},
+          success: function(msg){
+            if(msg.state == "success"){
+              dialog({
+                  content: "密码重置成功",
+                  cancel: false,
+                  button: [{
+                    value: '确定',
+                    autofocus: true
+                  }]
+              }).showModal();
+            }
+            if (msg.state == "fail") {
+              console.log("重置密码失败！");
+            }
+          }
+       });
+    });
+    //operate
+    $(".operate").click(function(){
+      var that = $(this);
+      $.ajax({
+          type: "POST",
+          url: "/operate",
+          data: {"time":$(this).attr("data-time"),"permission":that.attr("data-permission")},
+          success: function(msg){
+            dialog({
+                title: "成员 操作",
+                content: "操作成功！",
+                cancel: false,
+                button: [{
+                  value: '确定',
+                    callback: function () {
+                      location.reload();
+                    },
+                  autofocus: true
+                }]
+            }).showModal();
+          }
+       });
+    });
+    
+    //others words limit
+    var others_words = $(".others_words");
+    $("textarea[name='others']").bind('propertychange input', function () {  
+        var counter = $(this).val().length;
+        others_words.html(counter);
+        if (counter > 100) {
+          $(this).parent("div").addClass("has-error");
+        }else{
+          $(this).parent("div").removeClass("has-error");
+        }
+        // if (true) {}
+    });
+    
+   //启动编辑
+   $(".edit_btn").click(function(){
+      $("form.edit input[type='text'],form.edit textarea").removeProp("disabled");
+      $(this).hide();
+      $(this).siblings("button").css({"display":"inline-block"});
+      return false;
+   });
+     
+     //修改个人信息
+     $(".edit").validate({
+        errorElement: "p",
+        rules: {
+           phone: {
+            digits: true,
+            minlength: 11,
+            maxlength: 11,
+            remote: "check_phone"
+           },
+           other_phone: {
+            rangelength: [7,20],
+           },
+           email: {
+            email: true,
+            remote: "check_email"
+           },
+           wechat: {
+            remote: "check_wechat"
+           },
+           others: {
+            maxlength: 100
+           },
+           company: {
+            maxlength: 50
+           },
+           work_city1: {
+            required: true
+           },
+           work_job: {
+            maxlength: 50
+           }
+          },
+        messages: {
+           phone: {
+            digits: "手机号码必须是数字哦",
+            minlength: "手机号码必须是11位",
+            maxlength: "手机号码必须是11位",
+            remote: "该手机已被注册"
+           },
+           other_phone: {
+            rangelength: "号码格式有误"
+           },
+           email: {
+            email: "邮箱格式有误",
+            remote: "该邮箱已被注册"
+           },
+           wechat: {
+            remote: "该微信号已被注册"
+           },
+           company: {
+            maxlength: "太长了，请填简洁点"
+           },
+           work_job: {
+            maxlength: "岗位名称有那么长吗？"
+           }
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "post",
+                url: "/edit_personal",
+                data: $(".edit").serialize(),
+                success: function(msg){
+                dialog({
+                      // title: msg.status,
+                      content: msg.status,
+                      cancel: false,
+                      button: [{
+                        value: '确定',
+                          callback: function () {
+                              if (msg.status == "修改成功") {
+                                location.reload();
+                              }
+                          },
+                        autofocus: true
+                      }]
+                  }).showModal();
+                }
+            });    
+         },
+    });
+
+     //查询log
+     $("form.log").validate({
+        errorElement: "span",
+        rules: {
+           number: {
+            required: true,
+            digits: true
+           }
+          },
+        messages: {
+           number: {
+            required: "填了才可以查哦",
+            digits: "输入的必须是正整数"
+           }
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "post",
+                url: "/get_logs",
+                data: $("form.log").serialize(),
+                success: function(msg){
+                  var tbody = $("#collapseLog table tbody");
+                  var temp = "";
+                  for(var i in msg.logs){
+                    temp += "<tr><td>"+msg.logs[i].time+"</td><td>"+msg.logs[i].user+"</td><td>"+msg.logs[i].state+"</td><td>"+msg.logs[i].content+"</td></tr>";
+                  }
+                  tbody.html(temp);
+                }
+            });    
+         },
+    });
+
+     //发起活动
+     $("form.addActivity").validate({
+        errorElement: "p",
+        rules: {
+           activity_title: {
+            required: true,
+            maxlength: 20,
+           },
+           activity_content: {
+            required: true,
+            maxlength: 300
+           },
+           activity_time: {
+            required: true
+           },
+          },
+        messages: {
+           activity_title: {
+            required: "活动标题是必填的哦",
+            minlength: "不能为空哦",
+            maxlength: "不能超过20个字",
+           },
+           activity_content: {
+            required: "活动内容是必填的哦",
+            maxlength: "字数不能超过300字哦",
+           },
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "post",
+                url: "/add_activity",
+                data: $("form.addActivity").serialize(),
+                success: function(msg){
+                dialog({
+                      title: msg.status,
+                      content: msg.msg,
+                      cancel: false,
+                      button: [{
+                        value: '确定',
+                          callback: function () {
+                              if (msg.status == "活动发起成功") {
+                                $("form.addActivity")[0].reset();
+                              }
+                          },
+                        autofocus: true
+                      }]
+                  }).showModal();
+                }
+            });    
+         },
+    });
+     
+     //操作活动
+     $(".activity_btn").click(function(){
+        var that = $(this);
+        $.ajax({
+            type: "POST",
+            url: "/operate_activity",
+            data: {"number":$(this).attr("data-number"),"status":that.attr("data-status")},
+            success: function(msg){
+              dialog({
+                  title: "活动操作",
+                  content: "操作成功！",
+                  cancel: false,
+                  button: [{
+                    value: '确定',
+                      callback: function () {
+                        location.href = "/user?active=activity";
+                      },
+                    autofocus: true
+                  }]
+              }).showModal();
+            }
+         });
+      });
+     
+     //活动报名
+     $(".activity_apply_btn").click(function(){
+        $.ajax({
+            type: "POST",
+            url: "/activity_apply",
+            data: {"number":$(this).attr("data-number")},
+            success: function(msg){
+              dialog({
+                  title: "活动报名操作",
+                  content: msg.status,
+                  cancel: false,
+                  button: [{
+                    value: '确定',
+                      callback: function () {
+                        location.href = "/user?active=activity";
+                      },
+                    autofocus: true
+                  }]
+              }).showModal();
+            }
+         });
+      });
+	})
+</script>
+  </body>
+</html>

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include mobile_import %>
+    <style type="text/css">
+    form p{
+      padding: 0;
+      line-height: 50px;
+      font-size: 50px;
+      text-align: center;
+    }
+    form p input{
+      height: 50px;
+      width: 50%;
+      vertical-align: middle;
+    }
+    form p .login_btn{
+      width: 10%;
+      font-size: 28px;
+    }
+    </style>
+  </head>
+  <body>
+    <% include mobile_nav %>
+    <%if(user){%>
+      <p style="line-height: 50px;font-size:50px;text-align: center;">状态：登录成功！</p>
+      <p style="line-height: 50px;font-size:50px;text-align: center;">You can：<a href="/logout">注销</a></p>
+    <%}else{%>
+      <form id="login" method="post" action="/login">
+         <p>用户名：<input type="text" id="login_name"> </p>
+         <p>密&emsp;码：<input type="password" id="login_password"> </p>
+         <p><input type="submit" class="login_btn" value="登录"></p>
+         <p class="login_err" style="line-height: 50px;font-size:50px;text-align: center;color:#F00;"></p>
+      </form>
+    <%}%>
+<script type="text/javascript">
+	$(function () {
+		//登录
+    $("#login").submit(function(){
+      var login_err = $(".login_err");
+      var name = $.trim($("#login_name").val());
+      var password = $.trim($("#login_password").val());
+      $.ajax({
+        type: "POST",
+        url: "/login",
+        data: {"name":name,"password":password},
+        success: function(msg){
+          if (msg.state == "success") {
+            location.reload();
+          }else{
+            login_err.html(msg.err);
+            login_err.css({"display":"block"});
+          }
+        }
+     });
+      return false;
+    });
+	})
+</script>
+  </body>
+</html>

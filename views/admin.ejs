@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>超级管理页面</title>
+    <% include import %>
+    <style type="text/css">
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+  	<%
+      if(user){
+        if(user.name == "陈飞帆"){
+    %>
+        <ul class="list-group">
+           <li class="list-group-item">一键设置微信服务号菜单：<button type="button" class="btn btn-primary set_weixin_nav">提交</button></li>
+           <li class="list-group-item">待开发</li>
+           <li class="list-group-item">待开发</li>
+           <li class="list-group-item">待开发</li>
+           <li class="list-group-item">待开发</li>
+        </ul>
+    <%
+        }else{
+    %>
+      您的权限不足！
+    <%
+        }
+      }else{
+    %>
+      请先<a href="/user">登录</a>~
+    <%
+      }
+    %>
+<script type="text/javascript">
+	$(function () {
+		// $(".set_weixin_nav").click(function(){
+  //     $.ajax({
+  //           type: "POST",
+  //           url: "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=",
+  //           data: {"counts":counts},
+  //           success: function(msg){
+              
+  //           }
+  //        });
+  //   });
+	})
+</script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include mobile_import %>
+    <style type="text/css">
+    table{
+      margin-top: 10px;
+      width: 100%;
+    }
+    table tbody tr{
+      width: 100%;
+      line-height: 50px;
+    }
+    table tbody tr td{
+      text-align: center;
+    }
+    </style>
+  </head>
+  <body>
+    <% include mobile_nav %>
+    <%if(user){%>
+  	<table>
+     <thead>
+       <tr>
+         <th>姓名</th>
+         <th>常用号码</th>
+         <th>工作城市</th>
+         <th>母校信息</th>
+       </tr>
+     </thead> 
+     <tbody>
+      <%
+        for(var i in list){
+          if(list[i].permission != "ing" && list[i].permission != "fail"){
+      %>
+       <tr>
+         <td>
+           <%=list[i].name%>
+          <%if(parseInt(list[i].name_number) != 1){%>
+            <%=list[i].name_number%>
+          <%}%>
+         </td>
+         <td>
+          <%if(list[i].is_phone == "off"){%>
+          保密
+          <%}else{%>
+            <%=list[i].phone%>
+          <%}%>
+         </td>
+         <td><%=list[i].work_city%></td>
+         <td>【<%=list[i].mater.th%>级】<%=list[i].mater.academy%></td>
+       </tr>
+       <%}}%>
+     </tbody>
+    </table>
+    <%}else{%>
+      <p style="line-height: 50px;font-size:50px;text-align: center;">请先<a href="/user">登录</a>…</p>
+    <%}%>
+<script type="text/javascript">
+	$(function () {
+
+	});
+</script>
+  </body>
+</html>

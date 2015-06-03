@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include import %>
+    <style type="text/css">
+    li{
+      line-height: 1.5em;
+    }
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+    <div class="panel-group" id="accordion">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" 
+              href="#collapseOne">
+              ①&nbsp;系统使用说明
+            </a>
+          </h4>
+        </div>
+        <div id="collapseOne" class="panel-collapse collapse">
+          <div class="panel-body">
+            <ul>
+              <li>本系统提供给所有重邮学子使用（目前主要针对在外实习和已工作者，大一、大二稍后开放），提交注册申请，审核通过后，登录本系统则可以查看重邮通讯录。</li>
+              <li>
+                本系统有严格的权限管理制度
+                <ol>
+                  <li>超级管理员：包含管理员的所有权限、设置管理员为超级管理员、设置超级管理员为管理员、删除管理员、把用户移出黑名单、重置任何人密码。</li>
+                  <li>管理员：包含普通用户的所有权限、设置普通用户为管理员、设置管理员为普通用户、删除普通用户/待审核用户、拉黑普通用户/待审核用户、设置待审核用户为普通用户、修改普通用户的母校信息。</li>
+                  <li>普通用户：查看校友通讯录、修改个人信息、修改密码。</li>
+                  <li>待审核用户：无</li>
+                  <li>黑名单用户：不享有任何权限，并且不能再被注册。</li>
+                </ol>
+              </li>
+              <li>对于恶意性攻击者、填写内容不健康并拒绝修改者以及其他违反有关规定者，管理员/超级管理员有权对其进行拉黑操作。如有异议，请联系超级管理员进行核实后移出黑名单。</li>
+              <li>
+                本系统的对应公众号：contacts  &emsp;&emsp;(扫一扫下方的二维码，即可关注公众号)<div style="width:258px;height:258px;"><img src='images/wechat.jpg' width='258' height='258'></div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" 
+              href="#collapseTwo">
+              ②&nbsp;管理员列表/黑名单
+            </a>
+          </h4>
+        </div>
+        <div id="collapseTwo" class="panel-collapse collapse">
+          <div class="panel-body">
+            <table class="table table-bordered table-hover" style="text-align:center;">
+              <caption>管理员列表</caption>
+               <thead>
+                  <tr>
+                     <th>姓名</th>
+                     <th>身份</th>
+                     <th>常用号码</th>
+                  </tr>
+               </thead>
+               <tbody>
+                <%
+                  for(var i in list){
+                    if(list[i].permission != "fail"){
+                %>
+                  <tr>
+                     <td>
+                       <%=list[i].name%>
+                      <%if(parseInt(list[i].name_number) != 1){%>
+                        <%=list[i].name_number%>
+                      <%}%>
+                     </td>
+                     <td>
+                       <%if(list[i].permission == "admin"){%>
+                       管理员
+                       <%}%>
+                       <%if(list[i].permission == "super"){%>
+                       超级管理员
+                       <%}%>
+                     </td>
+                     <td><%=list[i].phone%></td>
+                  </tr>
+                  <%}}%>
+               </tbody>
+            </table>
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h3 class="panel-title">
+                    黑名单
+                  </h3>
+               </div>
+               <div class="panel-body">
+                  <%
+                    for(var i in list){
+                      if(list[i].permission == "fail"){
+                  %>
+                     <%=list[i].name%>
+                    <%if(parseInt(list[i].name_number) != 1){%>
+                      <%=list[i].name_number%>
+                    <%}%>&emsp;&emsp;&emsp;&emsp;
+                  <%
+                     }
+                   }
+                   %>
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" 
+              href="#collapseThree">
+              ③&nbsp;更新日志
+            </a>
+          </h4>
+        </div>
+        <div id="collapseThree" class="panel-collapse collapse in">
+          <div class="panel-body">
+            <ul class="list-group">
+              <li class="list-group-item active">
+                  <span class="badge">2015-05-27</span>
+                  CQUPT-Contacts bate 5.0
+              </li>
+              <li class="list-group-item">
+                  <ul>
+                    <li>【重要】个人信息新添“邮箱”一栏，在此之前注册的同学可以到个人信息中补上邮箱信息，新注册的同学可以在注册时填写。</li>
+                    <li>【重要】为了加快审核，一旦有同学注册，对应省份的管理员和所有的超级管理员都会收到邮件提醒。</li>
+                    <li>新添找回密码功能，忘记密码的同学在登录界面可以凭邮箱找回，假如之前没有填写邮箱，则只能联系超级管理员重置密码。</li>
+                    <li>修复个人信息修改时可以把常用号码和邮箱改为其他已注册的号码和邮箱的bug。</li>
+                    <li>根据用户反映密码安全性太弱，本版本开始把密码长度限制为6到20位，之前已注册的用户密码继续有效，为了您的账号安全，请尽快修改密码。</li>
+                    <li>为了透明化管理，黑名单将公布在“help”模块中，如有异议者，请联系超级管理员。</li>
+                    <li>新添系统自动发送邮件功能，所有用户在注册、权限被修改以及有审核结果时都会收到邮件通知（前提是填写有邮箱信息）。</li>
+                    <li>为了方便大家关注微信公众号，首页和help页面的系统说用说明都加入公众号二维码，扫一扫即可观众重邮通讯录微信公众号。</li>
+                    <li>优化用户体验，“user”版块做了大量的优化、美化。</li>
+                    <li>优化用户体验，首页只显示目前还可以报名的活动信息，对于已过期的活动不再显示。</li>
+                  </ul>
+              </li>
+              <li class="list-group-item active">
+                  <span class="badge">2015-05-19</span>
+                  CQUPT-Contacts bate 4.0
+              </li>
+              <li class="list-group-item">
+                  <ul>
+                    <li>首先跟大家说抱歉，之前使用由百度提供免费的数据库，由于百度数据库出现bug，导致大家的信息丢失。目前，数据库已经迁移到阿里云的付费数据库中，数据将得到保障，请大家放心。</li>
+                    <li>根据大家反馈，把登录和注册按钮和连接改成中文的“登录”和“注册”。</li>
+                    <li>超级管理员增加查看“管理日志”功能。</li>
+                    <li>优化用户体验，通讯录中的“个人信息”超过50字部分用省略号代替，点击省略号可以查看完整信息。</li>
+                    <li>优化用户体验，注册时，“籍贯”和“工作城市”提供下拉框选择，如无对应地区，请注册后到个人信息中修改地区信息。</li>
+                    <li>优化用户体验，个人信息修改时，不用“启动编辑”即可修改各项信息是否公开。</li>
+                    <li>【重要】电脑端新增活动功能，管理员可以发起活动（需超级管理员审批通过后大家方可参加），所有用户可以在“User”→“活动信息”中查看并报名活动。</li>
+                    <li>为了提高活动功能的关注率，首页将展示最新的5个活动，有小广告恐惧症者，请自行手动关闭。</li>
+                    <li>【重要】微信端测试上线，请大家关注微信测试公众号：contacts</li>
+                    <li>【重要】微信端新开功能：查看单人通讯录信息、查看所有活动、报名参加活动。</li>
+                  </ul>
+              </li>
+              <li class="list-group-item active">
+                  <span class="badge">2015-05-07</span>
+                  CQUPT-Contacts bate 3.0
+              </li>
+              <li class="list-group-item">
+                  <ul>
+                    <li>【重要】手机端上线，为广大用户的流量着想，手机端采用zepto框架极度优化页面和代码，页面大小只有5K左右（不含通讯录数据）。</li>
+                    <li>手机端功能尚未完善，但是基本的登录、查看通讯录（需登录）功能已上线。</li>
+                    <li>为防止管理人员进行不负责任的操作，系统新添加管理操作日志（超级管理员可见），管理人员的每一个操作都记录到日志中永久保存。</li>
+                    <li>优化用户体验，通讯录列表将按注册时间倒序排列，即最新注册的用户显示在最上面，以此往下。</li>
+                  </ul>
+              </li>
+              <li class="list-group-item active">
+                  <span class="badge">2015-05-05</span>
+                  CQUPT-Contacts bate 2.0
+               </li>
+               <li class="list-group-item">
+                  <ul>
+                    <li>【重要】对查看通讯录添加了权限，需要登录用户才可以查看通讯录。</li>
+                    <li>添加修改母校信息功能（需管理员/超级管理员权限）</li>
+                    <li>添加重置密码功能（需超级管理员权限）</li>
+                    <li>优化用户体验，注册或后期修改“其他”（即个人广告位）信息时，在输入时超过100字有警告提示，但仍可以提交，但是系统会自动丢弃100字以后的内容。</li>
+                    <li>优化用户体验，登录/注册时，在填写时可以直接按“回车键”/点击提交按钮进行提交动作。</li>
+                    <li>优化权限系统，按照权限等级从高到低（超级管理员>管理员），高的有权限修改低的以及同级的母校信息，反之则不行。</li>
+                  </ul>
+               </li>
+               <li class="list-group-item active">
+                  <span class="badge">2015-05-04</span>
+                  CQUPT-Contacts bate 1.0
+               </li>
+               <li class="list-group-item">
+                  <ul>
+                    <li>【重要】系统正式投入使用，实现了基本的数据录入和基本信息修改功能。</li>
+                    <li>【重要】权限系统正式建立，分为超级管理员、管理员、普通用户、黑名单用户、待审核用户。</li>
+                    <li>由于是首次上线，不需要登录即可查看通讯录。为了广大用户的个人信息安全，从下一个版本开始，用户需要登录才可以查看通讯录。</li>
+                  </ul>
+               </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+<script></script>
+  </body>
+</html>

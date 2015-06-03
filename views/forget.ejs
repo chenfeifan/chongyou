@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <% include import %>
+    <style type="text/css">
+    </style>
+  </head>
+  <body>
+  	<% include nav %>
+    <form class="form-horizontal forget" role="form" style="width:600px;margin:100px auto 0;">
+      <h3>邮箱验证通过，请重置密码!</h3>
+       <div class="form-group">
+          <label for="psw1" class="col-sm-4 control-label">新密码</label>
+          <div class="col-sm-8">
+             <input type="password" class="form-control" id="psw1" name="psw1" placeholder="6~20位，字母/数字/下划线组成，字母/下划线开头">
+          </div>
+       </div>
+       <div class="form-group">
+          <label for="psw2" class="col-sm-4 control-label">重复新密码</label>
+          <div class="col-sm-8">
+             <input type="password" class="form-control" id="psw2" name="psw2" placeholder="重复新密码">
+          </div>
+       </div>
+       <input type="hidden" name="time" value="<%=time%>">
+       <div class="form-group">
+          <div class="col-sm-offset-4 col-sm-10">
+             <button type="submit" class="btn btn-default">确定</button>
+          </div>
+       </div>
+    </form>
+<script type="text/javascript">
+	$(function () {
+    $.validator.addMethod("passwordTest", function(value, element, params){
+      var passwordTest = /^[a-zA-Z_][a-zA-Z0-9_]{5,19}$/;
+      return this.optional(element) || passwordTest.test(value);  //输入有值才校验
+    }, "由字母、数字和下划线组成，必须以字母或下划线开头");
+    $("form.forget").validate({
+        errorElement: "p",
+        rules: {
+           psw1: {
+            required: true,
+            rangelength: [6,20],
+            passwordTest: true
+           },
+           psw2: {
+            equalTo: "#psw1"
+           }
+          },
+        messages: {
+           psw1: {
+            required: "必填，请输入新密码",
+            rangelength: "长度必须为 6 和 20 之间",
+            passwordTest: "由字母、数字和下划线组成，必须以字母或下划线开头"
+           },
+           psw2: {
+            equalTo: "两次密码输入不一致"
+           }
+        },
+        submitHandler: function(form) {    
+             $.ajax({
+                type: "post",
+                url: "/forget_password",
+                data: $("form.forget").serialize(),
+                success: function(msg){
+                  dialog({
+                      content: msg.status,
+                      cancel: false,
+                      button: [{
+                        value: '确定',
+                        callback: function () {
+                            location.href = "/user";
+                        },
+                        autofocus: true
+                      }]
+                  }).showModal();
+                }
+            });    
+         },
+    });
+
+	})
+</script>
+  </body>
+</html>
